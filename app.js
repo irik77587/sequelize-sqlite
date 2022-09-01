@@ -15,6 +15,7 @@ import {Sequelize, Model, DataTypes} from 'sequelize';
 let sequelize = new Sequelize('sqlite::memory:');
 //let sequelize = new Sequelize(config.storage, config.username, config.password, config);
 
+// DataTypes.DATEONLY ignores time while DataTypes.DATE doesn't
 let User = sequelize.define('User', {
     username: DataTypes.STRING,
     birthday: DataTypes.DATEONLY,
