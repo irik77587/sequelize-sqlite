@@ -1,0 +1,29 @@
+{
+  "name": "sequelize-sqlite",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Database powered by sqlite and managed by sequelize",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/irik77587/sequelize-sqlite.git"
+  },
+  "keywords": [
+    "sqlite",
+    "sequelize",
+    "nodejs"
+  ],
+  "author": "irik77587",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/irik77587/sequelize-sqlite/issues"
+  },
+  "homepage": "https://github.com/irik77587/sequelize-sqlite#readme",
+  "dependencies": {
+    "sequelize": "^6.21.4",
+    "sqlite3": "^5.0.11"
+  }
+}
