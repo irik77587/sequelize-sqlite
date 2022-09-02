@@ -45,16 +45,16 @@ User.sync().then(async function () {
     });
 
     let userList;
-    userList = await User.findAll();
-    console.log("All users: ", JSON.stringify(userList, null, 2));
+    userList = await User.findAll().then(result => JSON.parse(JSON.stringify(result)));
+    console.log("All users: ", userList);
 
     userList = await User.findOne({
         where: {
             password: "strongpassword",
         },
-    });
+    }).then(result => JSON.parse(JSON.stringify(result)));
     // console.log(userList.every(user => user instanceof User));
-    console.log("Find by username: ", JSON.stringify(userList, null, 2));
+    console.log("Find by username: ", userList);
 
     console.log("Updating user details ...");
     User.update(
@@ -66,9 +66,9 @@ User.sync().then(async function () {
                 username: userList.username
             } 
         }
-    );
-    userList = await User.findAll();
-    console.log("After update: ", JSON.stringify(userList, null, 2));
+    ).then(result => JSON.parse(JSON.stringify(result)));
+    userList = await User.findAll().then(result => JSON.parse(JSON.stringify(result)));
+    console.log("After update: ", userList);
 
     console.log("Deleting a user from database ...");
     User.destroy({
@@ -76,6 +76,6 @@ User.sync().then(async function () {
             username: "davidho",
         },
     });
-    userList = await User.findAll();
-    console.log("After deletion: ", JSON.stringify(userList, null, 2));
+    userList = await User.findAll().then(result => JSON.parse(JSON.stringify(result)));
+    console.log("After deletion: ", userList);
 });
