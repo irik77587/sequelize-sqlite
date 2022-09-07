@@ -9,7 +9,13 @@ const config = {
     logging: false,
     operatorsAliases: false,
 };
-
+// Hashing passwords
+import {createHash} from "crypto";
+function hash(data) {
+    return createHash("sha256").update(data,"binary").digest("base64");
+}
+const defaultPassword = hash("strongpassword");
+console.log("Default Password is ", defaultPassword);
 // npm install sequelize sqlite3
 import { Sequelize, Model, DataTypes } from "sequelize";
 
@@ -22,7 +28,10 @@ let User = sequelize.define("User", {
     birthday: DataTypes.DATEONLY,
     password: {
         type: DataTypes.STRING,
-        defaultValue: "strongpassword",
+        defaultValue: defaultPassword,
+        set(value) {
+            this.setDataValue("password", hash(value))
+        }
     },
 });
 
@@ -50,7 +59,7 @@ User.sync().then(async function () {
 
     userList = await User.findOne({
         where: {
-            password: "strongpassword",
+            password: defaultPassword,
         },
     }).then(result => JSON.parse(JSON.stringify(result)));
     // console.log(userList.every(user => user instanceof User));
