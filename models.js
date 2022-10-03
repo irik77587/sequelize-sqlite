@@ -2,9 +2,9 @@ import { createHash } from 'node:crypto';
 function hashing(password) {
     return createHash("sha256").update(password,"binary").digest("base64");
 }
-import {v4 as uuidv4} from "uuid";
 import { Sequelize, Model, DataTypes } from "sequelize";
 let sequelize = new Sequelize("sqlite::memory:", { logging: false });
+
 // Alternatively import cofigurations to create a persistent file-based database
 // import dbconf from './dbconf';
 // let sequelize = new Sequelize(dbconf.storage, dbconf.username, dbconf.password, dbconf);
@@ -29,20 +29,6 @@ export let Users = sequelize.define("Users", {
             this.setDataValue('password', hashing(this.useruuid + value));
         }
     },
-    footmark: {
-        type: DataTypes.UUID,
-        allowNull: true,
-        unique: true,
-        set(value) {
-            if (value == null) this.setDataValue('footmark', null); else this.setDataValue('footmark', uuidv4());
-        }
-    }
-// }, {
-//     instanceMethods: {
-//         hashing(password) {
-//             return createHash("sha256").update(password,"binary").digest("base64");
-//         }
-//     }
 });
 
 export let Notes = sequelize.define("Notes", {
@@ -57,3 +43,17 @@ export let Notes = sequelize.define("Notes", {
         allowNull: false
     }
 });
+
+Users.hasMany(Notes, {
+    foreignKey: {
+        name: "user",
+        allowNull: false,
+        type: DataTypes.UUID
+    }
+});
+Notes.belongsTo(Users, {
+    foreignKey: "user"
+});
+
+Users.sync();
+Notes.sync();
