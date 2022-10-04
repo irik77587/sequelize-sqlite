@@ -2,7 +2,7 @@ import Request from 'supertest';
 import app from './app.js';
 
 const supertest = Request(app);
-const userapi = '/api/user', authapi = '/api/auth', useradmin = '/api/user/admin', emptyObject = {}, registered_user_credentials = "username=user1&password=123", unregistered_credentials = "username=unuser1&password=123";
+const userapi = '/api/user', authapi = '/api/auth', useradmin = '/api/user/admin', emptyObject = {}, registered_user_credentials = "username=user1&password=123", unregistered_credentials = "username=unuser1&password=123", wrong_password = "234";
 
 let cookie;
 
@@ -41,7 +41,8 @@ describe("User and Auth API", () => {
         expect(res.body).toEqual(emptyObject);
     }));
     it("Fail to duplicate user", () => supertest.put(userapi).send(registered_user_credentials).expect(200).then(not_valid_response));
-    it("Login fails for nonExistent user", () => supertest.post(authapi).send(unregistered_credentials).then(not_valid_response))
+    it("Login fails for nonExistent user", () => supertest.post(authapi).send(unregistered_credentials).then(not_valid_response));
+    it("Login fails for invalid password", () => supertest.post(authapi).send({username: registered_user_credentials.username, password: wrong_password}).then(not_valid_response));
     it("Login to created user", async () => await login(registered_user_credentials));
     it("Get user info of logged in user", () => supertest.get(userapi).set("Cookie", cookie).expect(200).then(valid_response));
     it("Logout", () => supertest.delete(authapi).set("Cookie", cookie).expect(200).then(res => expect(res.body).toEqual(null)));
@@ -66,7 +67,7 @@ const noteapi = '/api/note', test_note = "note=simple%20test%20note",  test_note
 let hash_NoteToBeDeleted;
 
 describe("Note API", () => {
-    const invalid_cookie = "connect.sid=some_random_cookie_that_has_nothing_to_do_with_authentication";
+    const invalid_cookie = "connect.sid=some_random_cookie_that_should_fail_authentication";
     it("Fail to create note without logging in first", () => supertest.post(noteapi).send(test_note).expect(200).then(res => {
         expect(res.body).not.toHaveProperty("hash");
         expect(res.body).not.toHaveProperty("note");
@@ -97,6 +98,18 @@ describe("Note API", () => {
         expect(res.body.map(noteBody => noteBody.hash)).toEqual(expect.arrayContaining([hash_NoteToBeDeleted]));
         // console.log(res.body);
         // console.log(res.body.map(noteBody => noteBody.hash));
+    });
+    it("Unauthorized users cannot change note by hash", async () => {
+        const changedNote = "Note is changed";
+        await supertest.patch(noteapi).set("Cookie", invalid_cookie).send("hash=" + hash_NoteToBeDeleted + "&note=" + changedNote).expect(200);
+        let res = await supertest.get(noteapi).expect(200);
+        expect(res.body.filter(({hash}) => hash == hash_NoteToBeDeleted)[0]["note"]).not.toEqual(changedNote);
+    });
+    it("Change note by hash", async () => {
+        const changedNote = "Note is changed";
+        await supertest.patch(noteapi).set("Cookie", cookie).send("hash=" + hash_NoteToBeDeleted + "&note=" + changedNote).expect(200);
+        let res = await supertest.get(noteapi).expect(200);
+        expect(res.body.filter(({hash}) => hash == hash_NoteToBeDeleted)[0]["note"]).toEqual(changedNote);
     });
     it("Delete note by hash", async () => {
         await supertest.delete(noteapi).set("Cookie", cookie).send("hash=" + hash_NoteToBeDeleted).expect(200);
