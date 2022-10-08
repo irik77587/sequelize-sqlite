@@ -1,13 +1,11 @@
-import { createHash } from 'node:crypto';
-function hashing(password) {
-    return createHash("sha256").update(password,"binary").digest("base64");
-}
 import { Sequelize, Model, DataTypes } from "sequelize";
 let sequelize = new Sequelize("sqlite::memory:", { logging: false });
 
 // Alternatively import cofigurations to create a persistent file-based database
 // import dbconf from './dbconf';
 // let sequelize = new Sequelize(dbconf.storage, dbconf.username, dbconf.password, dbconf);
+
+import hashing from "./hashing.js";
 
 // https://developer.mozilla.org/en-US/docs/web/javascript/reference/statements/export
 export let Users = sequelize.define("Users", {

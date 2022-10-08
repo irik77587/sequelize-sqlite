@@ -3,10 +3,7 @@ const router = Router();
 
 export default router;
 
-import { createHash } from 'node:crypto';
-function hashing(password) {
-    return createHash("sha256").update(password, "binary").digest("base64");
-}
+import hashing from "../hashing.js";
 
 // Login
 router.post("/", function (req, res) {
