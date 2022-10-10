@@ -3,14 +3,12 @@ const router = Router();
 
 export default router;
 
-import hashing from "../hashing.js";
-
 // Login
 router.post("/", function (req, res) {
     const { username, password } = req.body;
     // console.debug("Username: " + username + "\n" + "Password: " + password);
     req.app.locals.Users.findOne({ where: { username: username } }).then(user => {
-        let hash = hashing(user.useruuid + password);
+        let hash = user.hashing(user.useruuid + password);
         // console.debug(hash);
         if (hash !== user.password)
             throw new Error({"ERROR": "AUTHENTICATION FAILED"});

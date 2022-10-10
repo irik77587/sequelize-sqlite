@@ -5,7 +5,7 @@ let sequelize = new Sequelize("sqlite::memory:", { logging: false });
 // import dbconf from './dbconf';
 // let sequelize = new Sequelize(dbconf.storage, dbconf.username, dbconf.password, dbconf);
 
-import hashing from "./hashing.js";
+import {createHash} from "crypto";
 
 // https://developer.mozilla.org/en-US/docs/web/javascript/reference/statements/export
 export let Users = sequelize.define("Users", {
@@ -24,10 +24,14 @@ export let Users = sequelize.define("Users", {
         type: DataTypes.STRING,
         allowNull: false,
         set(value) {
-            this.setDataValue('password', hashing(this.useruuid + value));
+            this.setDataValue('password', this.hashing(this.useruuid + value));
         }
     },
 });
+
+Users.prototype.hashing = function hashing(password) {
+    return createHash("sha256").update(password,"binary").digest("base64");
+}
 
 export let Notes = sequelize.define("Notes", {
     hash: {
