@@ -3,26 +3,10 @@ const router = Router();
 
 export default router;
 
+import { login, logout } from "../dbops"
+
 // Login
-router.post("/", function (req, res) {
-    const { username, password } = req.body;
-    // console.debug("Username: " + username + "\n" + "Password: " + password);
-    req.app.locals.Users.findOne({ where: { username: username } }).then(user => {
-        let hash = user.hashing(user.useruuid + password);
-        // console.debug(hash);
-        if (hash !== user.password)
-            throw new Error({"ERROR": "AUTHENTICATION FAILED"});
-        else {
-            req.session.useruuid = user.useruuid;
-            delete user.password;
-            // console.debug(user);
-            res.json(user);
-        }
-    }).catch(error => res.json(error));
-});
+router.post("/", login);
 
 // Logout
-router.delete("/", function (req, res) {
-    req.session.destroy();
-    res.json(null);
-});
+router.delete("/", logout);

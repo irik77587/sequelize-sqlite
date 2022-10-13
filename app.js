@@ -9,10 +9,6 @@ app.use(session({
     saveUninitialized: false
 }));
 
-import { Users, Notes } from './models.js';
-app.locals.Users = Users;
-app.locals.Notes = Notes;
-
 import auth from './routes/auth.js'
 import user from './routes/user.js';
 import note from './routes/note.js';
