@@ -3,7 +3,7 @@ const router = Router();
 
 export default router;
 
-import { login, logout } from "../dbops"
+import { login, logout } from "../database/index.js"
 
 // Login
 router.post("/", login);

@@ -3,7 +3,7 @@ const router = Router();
 
 export default router;
 
-import { user_admin, user_details, create_user, delete_user } from "../dbops"
+import { user_admin, user_details, create_user, delete_user } from "../database/index.js"
 
 router.get("/admin", user_admin);
 
